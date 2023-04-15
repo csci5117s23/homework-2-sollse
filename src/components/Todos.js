@@ -1,7 +1,7 @@
 import 'bulma/css/bulma.min.css';
 import '@fortawesome/fontawesome-free/css/all.min.css'
 import { useState, useRef, useEffect } from 'react';
-import { getUndoneTodos, addNewTodo } from "@/modules/Data";
+import { getUndoneTodos, addNewTodo } from "@/modules/data";
 import { useAuth } from "@clerk/nextjs";
 import { useRouter } from "next/router";
 import { useClerk } from "@clerk/clerk-react";
@@ -84,7 +84,7 @@ export default function Todos() {
 
     const SignOutButton = () => {
         const { signOut } = useClerk();
-        
+
         return (
           <button className="button is-danger is-small" onClick={() => signOut()} >
             Sign out

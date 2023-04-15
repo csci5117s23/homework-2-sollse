@@ -1,7 +1,7 @@
 import 'bulma/css/bulma.min.css';
 import '@fortawesome/fontawesome-free/css/all.min.css'
 import { useState, useRef, useEffect } from 'react';
-import { getTodoWithID } from "@/modules/Data";
+import { getTodoWithID } from "@/modules/data";
 import { useAuth } from "@clerk/nextjs";
 import { useRouter } from "next/router";
 import { useClerk } from "@clerk/clerk-react";

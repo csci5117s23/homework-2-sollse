@@ -4,7 +4,7 @@ import { useClerk } from "@clerk/clerk-react";
 import { useState, useRef, useEffect } from 'react';
 import { useRouter } from "next/router";
 import { useAuth } from "@clerk/nextjs";
-import { getDoneTodos } from "@/modules/Data";
+import { getDoneTodos } from "@/modules/data";
 
 export default function Done() {
   const { isLoaded, userId, sessionId, getToken } = useAuth();
