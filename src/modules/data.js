@@ -1,5 +1,3 @@
-// import {Datastore} from 'codehooks-js'
-
 const backend_base = "https://backend-3ocf.api.codehooks.io/dev";
 
 
