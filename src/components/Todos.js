@@ -10,7 +10,7 @@ import { useClerk } from "@clerk/clerk-react";
 export default function Todos() {
     const { isLoaded, userId, sessionId, getToken } = useAuth();
     const [undoneTodos, setUndoneTodos] = useState([]);
-    const [newTodo, setNewTodo] = useState([]);
+    const [newTodo, setNewTodo] = useState("");
     // const [todos, setTodos] = useState([]);
     const [loading, setLoading] = useState(true);
     const todoRef = useRef();
@@ -29,9 +29,13 @@ export default function Todos() {
 
     async function AddTodo() {
         const token = await getToken({ template: "codehooks" });
-        const newItem = todoRef.current.value;
-        todoRef.current.value = null;
-        setNewTodo(await addNewTodo(userId, newItem, token));
+        const adding = await addNewTodo(userId, newTodo, token);
+        setNewTodo("");
+        setUndoneTodos(undoneTodos.concat(adding));
+        
+        // const newItem = todoRef.current.value;
+        // todoRef.current.value = null;
+        // setNewTodo(await addNewTodo(userId, newItem, token));
     };
 
     function TodoList(list) {
@@ -59,11 +63,12 @@ export default function Todos() {
 
     function AddingPart(){
         return (
+            <>
             <div className='column is-ancestor'>
                 <div className="column field has-addons">
                     <div className="control has-icons-left">
-                        <input ref={todoRef} className="input is-danger is-light" type="text" placeholder="Add task"></input>
-                        {/* <input value={newTodo}  onChange={(e) => setNewTodo(e.target.value)} className="input is-danger is-light" type="text" placeholder="Add task to your todo list"></input> */}
+                        {/* <input ref={todoRef} className="input is-danger is-light" type="text" placeholder="Add task"></input> */}
+                        <input value={newTodo}  onChange={(e) => setNewTodo(e.target.value)} className="input is-danger is-light" type="text" placeholder="Add task to your todo list"></input>
                         <span className="icon is-small is-left">
                             <i className="fa-solid fa-plus"></i>
                         </span>
@@ -73,12 +78,13 @@ export default function Todos() {
                             Save
                         </button>
                     </div> 
+                    {console.log(undoneTodos)}
                 </div>
                 <div className="column">
                     <SignOutButton></SignOutButton>
                 </div>
             </div>
-            
+            </>
         )
     };
 
@@ -93,19 +99,25 @@ export default function Todos() {
     };
 
       
-    if (loading){
-        return(
-            <div className="container">
-                <div className='columns is-ancestor'>
-                    <div className='column is-three-fifths'>
-                        <p>Loading</p>
-                    </div>
-                    <AddingPart></AddingPart>
-                </div>
-            </div>
-        )
-    } else{
+    // if (loading){
+    //     return(
+    //         <>            
+    //         {console.log(undoneTodos)}
+    //         <div className="container">
+    //             <div className='columns is-ancestor'>
+    //                 <div className='column is-three-fifths'>
+    //                     <p>Loading</p>
+    //                 </div>
+    //                 <AddingPart></AddingPart>
+    //             </div>
+    //         </div>
+    //         </>
+
+    //     )
+    // } else{
         return (
+            <>
+            {console.log(undoneTodos)}
             <div className="container">
                 <div className='columns is-ancestor'>
                     <div className='column is-three-fifths'>
@@ -126,6 +138,7 @@ export default function Todos() {
                     <AddingPart></AddingPart>
                 </div>
             </div>
+            </>
         )   
-    }
+    // }
 }

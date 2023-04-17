@@ -1,8 +1,10 @@
-const backend_base = "https://backend-3ocf.api.codehooks.io/dev";
+// const backend_base = "https://backend-3ocf.api.codehooks.io/dev";
+const backend_base = process.env.NEXT_PUBLIC_BACKEND;
 
 
 export async function getUndoneTodos(userId, authToken){
-    const result = await fetch(`${backend_base}/todos?userId=${userId}&complete=false`, {
+    // const result = await fetch(`${backend_base}/todos`, {
+    const result = await fetch(backend_base+"/toods",{
         'method': 'GET',
         'headers': {
             // 'x-apikey': '3bc38e6f-b1ad-4210-8bf2-c39dddd01983'
@@ -39,7 +41,9 @@ export async function getDoneTodos(userId, authToken){
 
 
 export async function addNewTodo(userId, newTodo, authToken){
-    const result = await fetch(`${backend_base}/todos`, {
+    // const result = await fetch(`${backend_base}/todos`, {
+
+    const result = await fetch(backend_base+"/toods", {
         'method': 'POST',
         'headers': {
             'Authorization': 'Bearer ' + authToken,
@@ -52,7 +56,7 @@ export async function addNewTodo(userId, newTodo, authToken){
             complete: false
         })
     });
-    // return;
+    
     return await result.json();
 }
 
