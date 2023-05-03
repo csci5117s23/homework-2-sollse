@@ -1,15 +1,22 @@
 import Link from 'next/link';
 import 'bulma/css/bulma.min.css';
+import { useClerk } from "@clerk/clerk-react";
 import { ClerkProvider, SignIn, SignedIn, SignedOut, UserButton, UserProfile } from '@clerk/nextjs';
 
 const Nav = () => {
+    const SignOutButton = () => {
+        const { signOut } = useClerk();
+        return (
+          <button className="button is-danger is-small" onClick={() => signOut()} >
+            Sign out
+          </button>
+        );
+      };
+
     return (
+        <>
         <aside className="menu">
-            {/* <p class="menu-label">My To-do</p> */}
             <ul className="menu-list">
-                <li>
-                    <UserButton></UserButton>
-                </li>
                 <li>
                     <Link href="/">Home</Link>
                 </li>
@@ -30,6 +37,12 @@ const Nav = () => {
                 </li>
             </ul>
         </aside>
+        
+        <br></br>
+        {/* <UserButton></UserButton> */}
+        <SignOutButton></SignOutButton>
+        </>
+        
     )
 }
 

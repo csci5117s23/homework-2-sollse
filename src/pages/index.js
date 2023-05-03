@@ -1,5 +1,5 @@
 import 'bulma/css/bulma.min.css';
-import { SignIn, SignedIn, SignedOut, useAuth, useUser } from '@clerk/nextjs';
+import { SignIn, useAuth, useUser } from '@clerk/nextjs';
 import { useEffect } from 'react';
 import { useRouter } from "next/router";
 
@@ -23,15 +23,6 @@ export default function Home() {
       )
     }
   }
-
-  // if (userId) {
-  //   return (
-  //     <div>
-  //       <h1>Hello, {user.firstName}!</h1>
-  //       <p>{userId}</p>
-  //     </div>
-  //   )
-  // }
 
   return (
     <Redirect></Redirect>

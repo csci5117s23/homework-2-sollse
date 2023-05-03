@@ -1,7 +1,8 @@
 import 'bulma/css/bulma.min.css';
-import '@fortawesome/fontawesome-free/css/all.min.css'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCheck, faTrashCan } from '@fortawesome/free-solid-svg-icons';
 import { useState, useRef, useEffect } from 'react';
-import { getTodoWithID } from "@/modules/data";
+import { getTodoWithID, deleteTodo, setComplete } from "../../modules/data";
 import { useAuth } from "@clerk/nextjs";
 import { useRouter } from "next/router";
 import { useClerk } from "@clerk/clerk-react";
@@ -12,7 +13,6 @@ export default function OneTodo() {
     const { isLoaded, userId, sessionId, getToken } = useAuth();
     const [todo, setTodo] = useState([]);
     const [loading, setLoading] = useState(true);
-    const todoRef = useRef();
     const router = useRouter();
     const { id } = router.query;
 
@@ -20,53 +20,37 @@ export default function OneTodo() {
         async function process() {
           if (userId) {
             const token = await getToken({ template: "codehooks" });
-
             setTodo(await getTodoWithID(userId, id, token));
             setLoading(false);
           }
         }
         process();
-    }, [isLoaded, todo]);
+    }, [isLoaded]);
 
-    function TodoList(list) {
-        const completeTodo = (todo) => {
-            todo.complete = true;
-            setTodo(todo);
-        }
-    
-        return (
-            undoneTodos.map((todo, index) => {
-            return (
-              <tr key={index}>
-                <td>{todo.category}</td>
-                <td>{todo.createDate}</td>
-                <td>{todo.complete.toString()}</td>
-                <td>
-                  <button className='button is-rounded is-small is-danger' onClick={() => completeTodo(todo)}>Complete</button>
-                </td>
-              </tr>
-            )
-          })
-        )
+    async function CompleteTodo(todo) {
+        const token = await getToken({ template: "codehooks" });
+        const complete = await setComplete(userId, id, id.item, id.createDate, token);
+        // setNewTodo("");
+        setTodo(getTodoWithID(userId, id, token));
     };
 
-    const SignOutButton = () => {
-        const { signOut } = useClerk();
-        
-        return (
-          <button className="button is-danger is-small" onClick={() => signOut()} >
-            Sign out
-          </button>
-        );
+    async function DeleteTodo(todo) {
+        const token = await getToken({ template: "codehooks" });
+        try {
+            await deleteTodo(userId, id, token);
+          } catch (e) {
+            console.log(e);
+          }
+          setTodo(getTodoWithID(userId, id, token));
     };
 
-      
+
     if (loading){
         return(
             <div className="container">
                 <div className='columns is-ancestor'>
                     <div className='column is-three-fifths'>
-                        <p>Loading {id}</p>
+                        <p>Loading...</p>
                     </div>
                     <div className="column">
                         <button className="button is-danger is-light">
@@ -74,41 +58,51 @@ export default function OneTodo() {
                               Go to your to-do list
                             </Link>
                         </button>
-                        <br></br>
-                        <SignOutButton></SignOutButton>
                     </div>
                 </div>
             </div>
         )
     } else{
         return (
-            <div className="container">
-                <div className='columns is-ancestor'>
-                    <div className='column is-three-fifths'>
-                        <label className="label">{id}</label>
-                        <table className='table'>
-                            <thead>
-                                <tr>
-                                    <th>Category</th>
-                                    <th>Created date</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <TodoList list={todo}></TodoList>                            
-                            </tbody>
-                        </table>
-                    </div>    
-                    <div className="column">
-                        <button className="button is-danger is-light">
-                            <Link href="/todos" className='is-link'>
-                              Go to your to-do list
-                            </Link>
-                        </button>
-                        <br></br>
-                        <SignOutButton></SignOutButton>
+            <>
+                {console.log(todo)}
+                <div className="container">
+                    <div className='columns is-ancestor'>
+                        <div className='column is-three-fifths'>
+                            <label className="label">{todo.item}</label>
+                            <table className='table'>
+                                <thead>
+                                    <tr>
+                                        {/* <th>Category</th> */}
+                                        <th>Created date</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr key={id}>
+                                        {/* <td>{todo.item}</td> */}
+                                        <td>{todo.createDate}</td>
+                                        {todo.complete? (<td>Done</td>) : <td>Incomplete</td>}
+                                    </tr>                         
+                                </tbody>
+                            </table>
+                            <button className='button is-rounded is-small is-danger' onClick={() => CompleteTodo(todo)}>
+                                <FontAwesomeIcon icon={faCheck} style={{color: "#ffffff",}} />
+                            </button>
+                            <button className='button is-rounded is-small is-danger' onClick={() => DeleteTodo(todo)}>
+                                <FontAwesomeIcon icon={faTrashCan} style={{color: "#ffffff",}} />
+                            </button>
+                        </div>    
+                        <div className="column">
+                            <button className="button is-danger is-light">
+                                <Link href="/todos" className='is-link'>
+                                Go to your to-do list
+                                </Link>
+                            </button>
+                        </div>
                     </div>
                 </div>
-            </div>
+            </>
         )   
     }
 }

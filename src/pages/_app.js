@@ -1,4 +1,4 @@
-import '@/styles/globals.css';
+// import '@/styles/globals.css';
 import 'bulma/css/bulma.min.css';
 // import '@fontawesome/fontawesome-free/css/all.min.css'
 import Layout from '../components/Layout';

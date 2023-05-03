@@ -4,33 +4,23 @@ import { useClerk } from "@clerk/clerk-react";
 import { useState, useRef, useEffect } from 'react';
 import { useRouter } from "next/router";
 import { useAuth } from "@clerk/nextjs";
-import { getDoneTodos } from "@/modules/data";
+import { getDoneTodos } from "../modules/data";
 
 export default function Done() {
   const { isLoaded, userId, sessionId, getToken } = useAuth();
   const [doneTodos, setDoneTodos] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
       async function process() {
         if (userId) {
           const token = await getToken({ template: "codehooks" });
-
           setDoneTodos(await getDoneTodos(userId, token));
           setLoading(false);
         }
       }
       process();
   }, [isLoaded]);
-
-  
-  const SignOutButton = () => {
-    const { signOut } = useClerk();
-    return (
-      <button className="button is-danger is-small" onClick={() => signOut()} >
-        Sign out
-      </button>
-    );
-  };
 
     
   function redirect(){
@@ -78,8 +68,6 @@ export default function Done() {
                   Go to your to-do list
                 </Link>
             </button>
-            <br></br>
-            <SignOutButton></SignOutButton>
           </div>
         </div>
       </div>

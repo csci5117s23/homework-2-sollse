@@ -1,127 +1,79 @@
 import 'bulma/css/bulma.min.css';
-import '@fortawesome/fontawesome-free/css/all.min.css'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCheck, faTrashCan } from '@fortawesome/free-solid-svg-icons';
 import { useState, useRef, useEffect } from 'react';
-import { getUndoneTodos, addNewTodo } from "@/modules/data";
+import { getUndoneTodos, addNewTodo, setComplete, deleteTodo } from "../modules/data";
 import { useAuth } from "@clerk/nextjs";
 import { useRouter } from "next/router";
 import { useClerk } from "@clerk/clerk-react";
+import Link from 'next/link';
 
 
 export default function Todos() {
     const { isLoaded, userId, sessionId, getToken } = useAuth();
     const [undoneTodos, setUndoneTodos] = useState([]);
     const [newTodo, setNewTodo] = useState("");
-    // const [todos, setTodos] = useState([]);
+    const [todos, setTodos] = useState("");
     const [loading, setLoading] = useState(true);
-    const todoRef = useRef();
 
     useEffect(() => {
         async function process() {
           if (userId) {
             const token = await getToken({ template: "codehooks" });
-
             setUndoneTodos(await getUndoneTodos(userId, token));
             setLoading(false);
           }
         }
         process();
-    }, [isLoaded, undoneTodos]);
+    }, [isLoaded]);
 
     async function AddTodo() {
         const token = await getToken({ template: "codehooks" });
-        const adding = await addNewTodo(userId, newTodo, token);
+        const add = await addNewTodo(userId, newTodo, token);
         setNewTodo("");
-        setUndoneTodos(undoneTodos.concat(adding));
-        
-        // const newItem = todoRef.current.value;
-        // todoRef.current.value = null;
-        // setNewTodo(await addNewTodo(userId, newItem, token));
+        setUndoneTodos(undoneTodos.concat(add));
     };
 
-    function TodoList(list) {
-        const completeTodo = (todo) => {
-            todo.complete = true;
-            setTodo(todo);
-        }
     
+    function TodoList(list) {
         return (
             undoneTodos.map((todo, index) => {
             return (
               <tr key={index}>
-                <td>{todo.item}</td>
+                <td>
+                    <Link key={todo.item} href={`/todos/${todo._id}`}>
+                        {todo.item}
+                    </Link>
+                </td>
                 <td>{todo.category}</td>
                 <td>{todo.createDate}</td>
-                {/* <td>{todo.complete.toString()}</td> */}
-                <td>
-                  <button className='button is-rounded is-small is-danger' onClick={() => completeTodo(todo)}>Complete</button>
-                </td>
               </tr>
             )
           })
         )
     };
 
-    function AddingPart(){
-        return (
-            <>
-            <div className='column is-ancestor'>
-                <div className="column field has-addons">
-                    <div className="control has-icons-left">
-                        {/* <input ref={todoRef} className="input is-danger is-light" type="text" placeholder="Add task"></input> */}
-                        <input value={newTodo}  onChange={(e) => setNewTodo(e.target.value)} className="input is-danger is-light" type="text" placeholder="Add task to your todo list"></input>
-                        <span className="icon is-small is-left">
-                            <i className="fa-solid fa-plus"></i>
-                        </span>
+    if (loading){
+        return(
+            <>            
+                {console.log(undoneTodos)}
+                <div className="container">
+                    <div className='columns is-ancestor'>
+                        <div className='column is-three-fifths'>
+                            <p>Loading...</p>
+                        </div>
                     </div>
-                    <div className="control">
-                        <button className="button is-danger is-light" onClick={AddTodo}>
-                            Save
-                        </button>
-                    </div> 
-                    {console.log(undoneTodos)}
                 </div>
-                <div className="column">
-                    <SignOutButton></SignOutButton>
-                </div>
-            </div>
             </>
-        )
-    };
-
-    const SignOutButton = () => {
-        const { signOut } = useClerk();
-
-        return (
-          <button className="button is-danger is-small" onClick={() => signOut()} >
-            Sign out
-          </button>
         );
-    };
-
-      
-    // if (loading){
-    //     return(
-    //         <>            
-    //         {console.log(undoneTodos)}
-    //         <div className="container">
-    //             <div className='columns is-ancestor'>
-    //                 <div className='column is-three-fifths'>
-    //                     <p>Loading</p>
-    //                 </div>
-    //                 <AddingPart></AddingPart>
-    //             </div>
-    //         </div>
-    //         </>
-
-    //     )
-    // } else{
+    } else{
         return (
             <>
             {console.log(undoneTodos)}
             <div className="container">
                 <div className='columns is-ancestor'>
                     <div className='column is-three-fifths'>
-                        <label className="label">You have {undoneTodos.length} things to do</label>
+                        <label className="label has-text-danger">You have {undoneTodos.length} things to do</label>
                         <table className='table'>
                             <thead>
                                 <tr>
@@ -135,10 +87,31 @@ export default function Todos() {
                             </tbody>
                         </table>
                     </div>    
-                    <AddingPart></AddingPart>
+                    <div className='column is-ancestor'>
+                    <div className="field has-addons">
+                        <div className="control has-icons-left">
+                            <input 
+                                className="input is-danger is-light"
+                                type="text"
+                                placeholder="Add task"
+                                value={newTodo}
+                                onChange={(e) => setNewTodo(e.target.value)} 
+                                onKeyDown = {(e)=>{if (e.key === 'Enter'){AddTodo()}}}
+                            />
+                            <span className="icon is-small is-left">
+                                <i className="fa-solid fa-plus"></i>
+                            </span>
+                        </div>
+                        <div className="control">
+                            <button className="button is-danger is-light" onClick={AddTodo}>
+                                Save
+                            </button>
+                        </div> 
+                    </div>
+                </div>
                 </div>
             </div>
             </>
-        )   
-    // }
+        );   
+    }
 }

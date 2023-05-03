@@ -1,11 +1,16 @@
 import 'bulma/css/bulma.min.css';
-import { ClerkProvider, SignIn, SignedIn, SignedOut, UserButton, UserProfile } from '@clerk/nextjs';
+import { SignedOut, UserProfile, RedirectToSignIn } from '@clerk/nextjs';
 
 
 export default function MyAccount() {
   return (
-    <div>
+    <>
+      <SignedOut>
+        <RedirectToSignIn></RedirectToSignIn>
+      </SignedOut>
+      <div>
         <UserProfile />
     </div>
+    </>
   )
 }
